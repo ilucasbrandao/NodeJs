@@ -39,13 +39,37 @@ app.post('/users', async (request, response) => {
 });
 
 // update
-app.put('/', (request, response) => {});
-
-// patch
-app.patch('/', (request, response) => {});
+app.put('/users/:id', async (request, response) => {
+  try {
+    const updateUser = await prisma.user.update({
+      where: { id: request.params.id },
+      data: {
+        name: request.body.name,
+        email: request.body.email,
+        password: request.body.password,
+        bornAt: new Date(request.body.bornAt),
+      },
+    });
+    response.status(200).json(updateUser);
+  } catch (error) {
+    response.status(500).json({ message: 'Internal Server Error', error });
+  }
+});
 
 // delete
-app.delete('/', (request, response) => {});
+app.delete('/users/:id', async (request, response) => {
+  try {
+    const deleteUser = await prisma.user.delete({
+      where: {
+        id: request.params.id,
+      },
+    });
+    response.status(200).json(deleteUser);
+  } catch (error) {
+    console.log(error);
+    response.status(500).json({ message: 'Internal Server Error', error });
+  }
+});
 
 app.listen(PORT, () => {
   console.log(`Server is listening on port http://localhost:${PORT}`);
